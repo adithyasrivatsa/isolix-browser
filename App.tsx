@@ -326,6 +326,30 @@ const App: React.FC = () => {
     // Note: This would require a batch update API or loop. For prototype, local state is key.
   };
 
+  // Panel Reordering with Buttons
+  const handleMovePanel = async (id: string, direction: 'left' | 'right') => {
+    const currentIndex = panels.findIndex(p => p.id === id);
+    if (currentIndex === -1) return;
+
+    const newIndex = direction === 'left' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= panels.length) return;
+
+    const newPanels = [...panels];
+    const [removed] = newPanels.splice(currentIndex, 1);
+    newPanels.splice(newIndex, 0, removed);
+
+    // Update positions
+    const updatedPanels = newPanels.map((p, index) => ({ ...p, position: index }));
+    updateActivePanels(() => updatedPanels);
+
+    // Persist to DB if in Electron
+    if (isElectron) {
+      // Update positions in database using batch update
+      const positionUpdates = updatedPanels.map(p => ({ id: p.id, position: p.position }));
+      await window.electronAPI.updatePanelPositions(positionUpdates);
+    }
+  };
+
 
   const handleBroadcast = (e: React.FormEvent) => {
     e.preventDefault();
@@ -512,7 +536,7 @@ const App: React.FC = () => {
         id="panel-container"
         className="flex-1 w-full p-4 pb-24 flex items-center relative overflow-x-auto overflow-y-hidden transition-all duration-500 gap-3"
       >
-        {panels.map((panel) => (
+        {panels.map((panel, index) => (
           <div
             key={panel.id}
             draggable
@@ -530,6 +554,10 @@ const App: React.FC = () => {
               onRemove={handleRemovePanel}
               onUpdateTitle={handleUpdateTitle}
               onUpdateUrl={handleUpdateUrl}
+              onMoveLeft={(id) => handleMovePanel(id, 'left')}
+              onMoveRight={(id) => handleMovePanel(id, 'right')}
+              canMoveLeft={index > 0}
+              canMoveRight={index < panels.length - 1}
             />
           </div>
         ))}

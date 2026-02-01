@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PanelProps } from '../types';
-import { X, RotateCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, RotateCw, ChevronLeft, ChevronRight, ArrowLeft, ArrowRight } from 'lucide-react';
 
 // Declare webview type for TypeScript
 declare global {
@@ -24,7 +24,11 @@ const Panel: React.FC<PanelProps> = ({
   onHover,
   onRemove,
   onUpdateTitle,
-  onUpdateUrl
+  onUpdateUrl,
+  onMoveLeft,
+  onMoveRight,
+  canMoveLeft,
+  canMoveRight
 }) => {
   const webviewRef = useRef<any>(null);
   const [canGoBack, setCanGoBack] = useState(false);
@@ -123,6 +127,30 @@ const Panel: React.FC<PanelProps> = ({
       <div className="relative z-20 flex items-center gap-2 px-3 py-2 bg-slate-800/90 border-b border-slate-700/30">
         {/* Color Indicator */}
         <div className={`w-1.5 h-1.5 rounded-full ${data.color} flex-shrink-0`} />
+
+        {/* Panel Reorder Buttons (Left Side) */}
+        <div className={`
+          flex items-center gap-0.5 flex-shrink-0
+          transition-opacity duration-200
+          ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
+        `}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onMoveLeft?.(data.id); }}
+            disabled={!canMoveLeft}
+            className="p-1 hover:bg-indigo-600/20 rounded text-slate-500 hover:text-indigo-400 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+            title="Move Left"
+          >
+            <ArrowLeft size={13} />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onMoveRight?.(data.id); }}
+            disabled={!canMoveRight}
+            className="p-1 hover:bg-indigo-600/20 rounded text-slate-500 hover:text-indigo-400 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+            title="Move Right"
+          >
+            <ArrowRight size={13} />
+          </button>
+        </div>
 
         {/* Title */}
         <input

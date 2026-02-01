@@ -26,4 +26,8 @@ export interface PanelProps {
   onRemove: (id: string, e: React.MouseEvent) => void;
   onUpdateTitle: (id: string, newTitle: string) => void;
   onUpdateUrl: (id: string, newUrl: string) => void; // New handler for URL changes
+  onMoveLeft?: (id: string) => void;
+  onMoveRight?: (id: string) => void;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
 }

@@ -67,6 +67,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
     }
+    // Save any pending edits before closing
+    if (editingId && editName.trim()) {
+      onRename(editingId, editName);
+    }
     setIsOpen(false);
     setEditingId(null);
     setSearchQuery('');

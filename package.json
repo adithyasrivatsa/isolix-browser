@@ -3,6 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "description": "A productivity browser with isolated panels",
+  "license": "Apache-2.0",
+  "author": "Isolix",
   "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
